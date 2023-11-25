@@ -1,0 +1,34 @@
+{
+  "name": "@ppmdev/ppm-theme",
+  "version": "0.1.0",
+  "description": "Apply color theme to PPx",
+  "author": "",
+  "license": "",
+  "type": "module",
+  "main": "",
+  "directories": {
+    "doc": "doc",
+    "lib": "dist/lib"
+  },
+  "scripts": {
+    "type": "tsc --noEmit true --skipLibCheck true",
+    "deno": "deno run --no-check --allow-all --unstable",
+    "build": "ppmbuild",
+    "build:prod": "set NODE_ENV=Production&&ppmbuild -- src",
+    "version": "ppmversion",
+    "test": "jest"
+  },
+  "jest": {
+    "verbose": true,
+    "coverageProvider": "v8",
+    "preset": "ts-jest",
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+test.ts"
+    ]
+  }
+}
