@@ -15,7 +15,7 @@
     "deno": "deno run --no-check --allow-all --unstable",
     "build": "ppmbuild",
     "build:prod": "set NODE_ENV=Production&&ppmbuild -- src",
-    "version": "ppmversion",
+    "ppmver": "ppmversion",
     "test": "jest"
   },
   "jest": {

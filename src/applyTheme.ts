@@ -22,11 +22,6 @@ const {parentDir} = pathSelf();
 const lang = langApplyTheme[useLanguage()];
 
 const main = (): void => {
-  // if (PPx.Arguments.length === 0) {
-  //   PPx.Execute(`*script %sgu'ppmlib'\\errors.js,arg,${parentDir}\\${scriptName}`);
-  //   PPx.Quit(-1);
-  // }
-
   const {fileName, hasMode} = adjustArgs();
   const [ok, path] = getJsonPath(fileName);
 
@@ -89,9 +84,6 @@ const getJsonPath = (fileName: string): [boolean, string] => {
   const pwd = parentDir.replace(/^(.+)\\dist/, '$1');
   const themeDir = `${pwd}\\themes\\windowsterminal`;
   let path = `${themeDir}\\${fileName}.json`;
-  // path = path.replace(/screenshots|\.png$/g, (m) => {
-  //   return {screenshots: 'windowsterminal', '.png': '.json'}[m as 'screenshots' | '.png'];
-  // });
 
   if (!fso.FileExists(path)) {
     const pwd = fso.GetParentFolderName(path);
