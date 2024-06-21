@@ -6,11 +6,12 @@
 import '@ppmdev/polyfills/objectKeys.ts';
 import {tmp, useLanguage} from '@ppmdev/modules/data.ts';
 import fso from '@ppmdev/modules/filesystem.ts';
-import {isEmptyStr, isError} from '@ppmdev/modules/guard.ts';
+import {isEmptyStr} from '@ppmdev/modules/guard.ts';
 import {readLines, writeLines} from '@ppmdev/modules/io.ts';
 import {pathSelf} from '@ppmdev/modules/path.ts';
 import {ppm} from '@ppmdev/modules/ppm.ts';
 import {langApplyTheme} from './mod/language.ts';
+import {safeArgs} from '@ppmdev/modules/argument.ts';
 import {getTheme} from './mod/core.ts';
 
 type DarkMode = 'yes' | 'no' | undefined;
@@ -22,22 +23,23 @@ const {parentDir} = pathSelf();
 const lang = langApplyTheme[useLanguage()];
 
 const main = (): void => {
-  const {fileName, hasMode} = adjustArgs();
+  const [fileName, hasMode] = safeArgs('iceberg-dark', undefined);
   const [ok, path] = getJsonPath(fileName);
+  const darkMode = hasMode ? (/^(yes|no)$/.test(hasMode) ? (hasMode as DarkMode) : 'yes') : undefined;
 
   if (!ok) {
     ppm.linemessage('.', path, true);
   }
 
-  const resp = hasMode ?? ppm.choice('.', PLUGIN_NAME, `${lang.question} -> ${fileName}`, 'Ync', lang.yes, lang.no);
+  const resp = darkMode ?? ppm.choice('.', PLUGIN_NAME, `${lang.question} -> ${fileName}`, 'Ync', lang.yes, lang.no);
 
   if (resp === 'cancel') {
     PPx.Quit(1);
   }
 
-  let [error, data] = readLines({path});
+  const [error, data] = readLines({path});
 
-  if (isError(error, data)) {
+  if (error) {
     throw new Error(data);
   }
 
@@ -48,10 +50,10 @@ const main = (): void => {
   }
 
   const tmpDataPath = tmp().file;
-  [error, data] = writeLines({path: tmpDataPath, data: theme, overwrite: true, linefeed: '\n'});
+  const [error2, data2] = writeLines({path: tmpDataPath, data: theme, overwrite: true, linefeed: '\n'});
 
-  if (error) {
-    throw new Error(data);
+  if (error2) {
+    throw new Error(data2);
   }
 
   const automode = resp === 'yes' ? '0' : '-3';
@@ -64,20 +66,6 @@ const main = (): void => {
   loadcustAll();
 
   !hasMode && ppm.linemessage('.', lang.finish, true);
-};
-
-const adjustArgs = (args = PPx.Arguments): {fileName: string; hasMode: DarkMode} => {
-  const arr: [string, DarkMode] = ['iceberg-dark', undefined];
-
-  for (let i = 0, k = args.length; i < k; i++) {
-    arr[i] = args.Item(i);
-  }
-
-  if (!!arr[1]) {
-    arr[1] = /^(yes|no)$/.test(arr[1]) ? arr[1] : 'yes';
-  }
-
-  return {fileName: arr[0], hasMode: arr[1]};
 };
 
 const getJsonPath = (fileName: string): [boolean, string] => {
